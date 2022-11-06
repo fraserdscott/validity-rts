@@ -37,6 +37,8 @@ fn find_max_index(l: [Field]) -> Field {
     maxIndex
 }
 
+// TODO: make this recursive?
+
 // An Noir RTS game.
 // Each tick: 
 // - units move towards their respective "goal" position, at a rate of `SPEED`.
@@ -158,10 +160,10 @@ fn setup_and_sim(
 
 fn main(eventFaction : [Field; nEvents]) -> pub [Field; 2] {
     // Default values to mimic player input
-    let newGoalsX : [Field; nEvents] = [0; 3];
-    let newGoalsY : [Field; nEvents] = [0; 3];
     let eventTick : [Field; nEvents] = [0; 3];
     let eventSelected : [Field; nEvents] = [0; 3];
+    let newGoalsX : [Field; nEvents] = [0; 3];
+    let newGoalsY : [Field; nEvents] = [0; 3];
 
     setup_and_sim(eventFaction, eventTick, eventSelected, newGoalsX, newGoalsY)
 }

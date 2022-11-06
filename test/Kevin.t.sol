@@ -11,14 +11,6 @@ contract RollupTest is Test {
         rollup = new Rollup();
     }
 
-    function getBasicProofRequest() public pure returns (string[] memory) {
-        string[] memory inputs = new string[](5);
-        inputs[0] = "npx";
-        inputs[1] = "ts-node";
-        inputs[2] = "test/utils/ffiProof.ts";
-        return inputs;
-    }
-
     function testHash() external {
         // 1st hashing
         string[] memory inputs1 = new string[](4);
@@ -82,5 +74,13 @@ contract RollupTest is Test {
 
         rollup.withdraw();
         assertEq(rollup.winner().balance, PRIZE);
+    }
+
+    function getBasicProofRequest() public pure returns (string[] memory) {
+        string[] memory inputs = new string[](5);
+        inputs[0] = "npx";
+        inputs[1] = "ts-node";
+        inputs[2] = "test/utils/ffiProof.ts";
+        return inputs;
     }
 }
