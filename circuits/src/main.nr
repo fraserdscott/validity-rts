@@ -156,7 +156,7 @@ fn setup_and_sim(
     simulate_rts(factions, initialXs, initialYs, initialHealths, ranges, speeds, eventFactions, ticks, selected, newGoalsX, newGoalsY)
 }
 
-fn main() -> pub Field {
+fn main() -> pub [Field; 2] {
     // Default values to mimic player input
     let eventFactions : [Field; nEvents] = [0; 3];
     let eventTicks : [Field; nEvents] = [0; 3];
@@ -164,6 +164,6 @@ fn main() -> pub Field {
     let newGoalsX : [Field; nEvents] = [0; 3];
     let newGoalsY : [Field; nEvents] = [0; 3];
 
-    // For now only return the winner
-    setup_and_sim(eventFactions, eventTicks, selected, newGoalsX, newGoalsY)[1]
+    // Return empty eventHash for now
+    [0, setup_and_sim(eventFactions, eventTicks, selected, newGoalsX, newGoalsY)[1]]
 }

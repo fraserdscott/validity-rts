@@ -13,12 +13,10 @@ async function generateProof() {
     let acir = acir_from_bytes(acirByteArray);
 
     let abi = {
-        x : parseInt(process.argv[3]),
-        y : parseInt(process.argv[4]),
-        return : parseInt(process.argv[5])
+        return : parseInt(process.argv[3])
     }
 
-    let [prover, verifier] = await setup_generic_prover_and_verifier(acir);
+    let [prover] = await setup_generic_prover_and_verifier(acir);
     const proof = await create_proof(prover, acir, abi);
     // simple output -> easy to use by ffi
     console.log(proof.toString('hex'));
