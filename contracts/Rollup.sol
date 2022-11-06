@@ -1,11 +1,13 @@
 pragma solidity ^0.8.15;
 
+import "forge-std/Test.sol";
 import "./Verifier.sol";
 
-contract Rollup is TurboVerifier {
+contract Rollup is TurboVerifier, Test {
     uint256 public winner;
     bytes32 private eventHash;
 
+    // TODO: Remove FFI
     /* 
     Player actions are logged with: 
     - sender's address
@@ -15,7 +17,12 @@ contract Rollup is TurboVerifier {
     Note that the address and timestamp are enforced by the contract.
     */
     function move(uint256 unit, uint256 newGoalX, uint256 newGoalY) public {
-        eventHash = keccak256(abi.encode(msg.sender, block.timestamp, unit, newGoalX, newGoalY));
+        string[] memory inputs = new string[](3);
+        inputs[0] = "npx";
+        inputs[1] = "ts-node";
+        inputs[2] = "test/utils/hashEvent.ts";
+
+        eventHash = bytes32(vm.ffi(inputs));
     }
 
     function settle(bytes memory proof) public {

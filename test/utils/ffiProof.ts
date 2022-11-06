@@ -5,8 +5,8 @@ import { readFileSync } from 'fs';
 import { BarretenbergWasm } from '@noir-lang/barretenberg/dest/wasm';
 import { SinglePedersen } from '@noir-lang/barretenberg/dest/crypto/pedersen';
 
-export const ZERO = Buffer.from("0000000000000000000000000000000000000000000000000000000000000000", "hex");
-export const N_EVENTS = 3;
+const ZERO = Buffer.from("0000000000000000000000000000000000000000000000000000000000000000", "hex");
+const N_EVENTS = 3;
 
 let barretenberg: BarretenbergWasm;
 let pedersen: SinglePedersen;
@@ -31,7 +31,7 @@ async function generateProof() {
     let acir = acir_from_bytes(acirByteArray);
 
     let abi = {
-        eventFactions: ["0x0000000000000000000000000000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000000000000000000000000000",],
+        eventFactions: ["0x0000000000000000000000000000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000000000000000000000000000"],
         return: [eventHashStr, parseInt(process.argv[3])]
     }
 

@@ -28,4 +28,8 @@ contract RollupTest is Test {
         rollup.settle(proof);
         assertEq(rollup.winner(), 0);
     }
+
+    function testMove() external {
+        rollup.move(0, 0, 0);
+    }
 }
