@@ -11,7 +11,6 @@ async function hashEvent() {
     await barretenberg.init()
     pedersen = new SinglePedersen(barretenberg);
 
-    // TODO: get eventHash from process.argv[2]
     const eventHash = Buffer.from(process.argv[2].slice(2), "hex");
 
     let newEventHash = pedersen.compressInputs([eventHash, ZERO, ZERO, ZERO, ZERO, ZERO]);
