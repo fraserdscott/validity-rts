@@ -1,4 +1,2 @@
-eventFactions=[0,0,0]
-eventTicks=[0,0,0]
-selected=[0,0,0]
-return=0
+eventFaction=[0,0,0]
+return=[0,0]

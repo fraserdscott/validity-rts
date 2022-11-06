@@ -22,7 +22,7 @@ async function generateProof() {
     pedersen = new SinglePedersen(barretenberg);
 
     let eventHash = ZERO;
-    for (let i=0; i < N_EVENTS; i++) {
+    for (let i = 0; i < N_EVENTS; i++) {
         eventHash = pedersen.compressInputs([eventHash, ZERO, ZERO, ZERO, ZERO, ZERO]);
     };
     const eventHashStr = `0x` + eventHash.toString('hex');
@@ -31,7 +31,8 @@ async function generateProof() {
     let acir = acir_from_bytes(acirByteArray);
 
     let abi = {
-        return : [eventHashStr, parseInt(process.argv[3])]
+        eventFactions: ["0x0000000000000000000000000000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000000000000000000000000000",],
+        return: [eventHashStr, parseInt(process.argv[3])]
     }
 
     let [prover] = await setup_generic_prover_and_verifier(acir);

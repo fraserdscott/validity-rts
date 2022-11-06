@@ -1,7 +1,6 @@
 pragma solidity ^0.8.15;
 
 import "forge-std/Test.sol";
-import "forge-std/console2.sol";
 
 import {Rollup} from "contracts/Rollup.sol";
 
@@ -23,10 +22,9 @@ contract RollupTest is Test {
 
     function testLabouji() external {
         string[] memory inputs = getBasicProofRequest();
-        inputs[3] = "p";
+        inputs[3] = "build1";
         inputs[4] = "0";
         bytes memory proof = vm.ffi(inputs);
-        console2.logBytes(proof);
         rollup.settle(proof);
         assertEq(rollup.winner(), 0);
     }

@@ -156,13 +156,12 @@ fn setup_and_sim(
     simulate_rts(factions, initialXs, initialYs, initialHealths, ranges, speeds, eventFactions, ticks, selected, newGoalsX, newGoalsY)
 }
 
-fn main() -> pub [Field; 2] {
+fn main(eventFaction : [Field; nEvents]) -> pub [Field; 2] {
     // Default values to mimic player input
-    let eventFactions : [Field; nEvents] = [0; 3];
-    let eventTicks : [Field; nEvents] = [0; 3];
-    let selected : [Field; nEvents] = [0; 3];
     let newGoalsX : [Field; nEvents] = [0; 3];
     let newGoalsY : [Field; nEvents] = [0; 3];
+    let eventTick : [Field; nEvents] = [0; 3];
+    let eventSelected : [Field; nEvents] = [0; 3];
 
-    setup_and_sim(eventFactions, eventTicks, selected, newGoalsX, newGoalsY)
+    setup_and_sim(eventFaction, eventTick, eventSelected, newGoalsX, newGoalsY)
 }
