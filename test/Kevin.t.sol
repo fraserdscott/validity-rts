@@ -2,7 +2,7 @@ pragma solidity ^0.8.15;
 
 import "forge-std/Test.sol";
 
-import {Rollup, N_EVENTS} from "contracts/Rollup.sol";
+import {Rollup, N_EVENTS, PRIZE} from "contracts/Rollup.sol";
 
 contract RollupTest is Test {
     Rollup rollup;
@@ -78,6 +78,9 @@ contract RollupTest is Test {
         inputs[4] = "0";
         bytes memory proof = vm.ffi(inputs);
         rollup.settle(proof);
-        assertEq(rollup.winner(), 0);
+        assertEq(rollup.winner(), address(0));
+
+        rollup.withdraw();
+        assertEq(rollup.winner().balance, PRIZE);
     }
 }

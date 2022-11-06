@@ -4,11 +4,14 @@ import "forge-std/Test.sol";
 import "./Verifier.sol";
 
 uint256 constant N_EVENTS = 3;
+uint256 constant PRIZE = 1 ether;
 
 contract Rollup is TurboVerifier, Test {
-    uint256 public winner;
+
     uint256 public eventCount;
     bytes32 public eventHash;
+    address public winner;
+    bool public withdrawn;
 
     // TODO: Remove FFI
     /* 
@@ -39,10 +42,18 @@ contract Rollup is TurboVerifier, Test {
     function settle(bytes memory proof) public {
         require(this.verify(proof), "Invalid proof");
         require(
-            eventHash == abi.decode(proof, (bytes32[2]))[0],
+            eventHash == abi.decode(proof, (bytes32[1]))[0],
             "Incorrect event hash"
         );
 
-        winner = abi.decode(proof, (uint256[2]))[1];
+        winner = address(uint160(abi.decode(proof, (uint256[2]))[1]));
+    }
+
+    function withdraw() public {
+        require(!withdrawn, "Winner has aleady withdrawn reward");
+        withdrawn = true;
+        
+        (bool success,) = winner.call{value: PRIZE}("");
+        require(success, "ETH Transfer failed");
     }
 }
