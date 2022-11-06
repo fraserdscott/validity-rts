@@ -7,11 +7,12 @@ uint256 constant N_EVENTS = 3;
 uint256 constant PRIZE = 1 ether;
 
 contract Rollup is TurboVerifier, Test {
-
     uint256 public eventCount;
     bytes32 public eventHash;
     address public winner;
     bool public withdrawn;
+
+    event Move(address account, uint256 timestamp, uint256 unit, uint256 newGoalX, uint256 newGoalY);
 
     // TODO: Remove FFI
     /* 
@@ -37,6 +38,8 @@ contract Rollup is TurboVerifier, Test {
         inputs[3] = vm.toString(eventHash);
 
         eventHash = bytes32(vm.ffi(inputs));
+
+        emit Move(msg.sender, block.timestamp, unit, newGoalX, newGoalY);
     }
 
     function settle(bytes memory proof) public {
