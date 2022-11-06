@@ -1,12 +1,11 @@
 pragma solidity ^0.8.15;
 
-import "forge-std/Test.sol";
 import "./Verifier.sol";
 
-uint256 constant N_EVENTS = 3;
+uint256 constant N_EVENTS = 10000000;
 uint256 constant PRIZE = 1 ether;
 
-contract Rollup is TurboVerifier, Test {
+contract Rollup is TurboVerifier {
     uint256 public eventCount;
     bytes32 public eventHash;
     address public winner;
@@ -31,13 +30,12 @@ contract Rollup is TurboVerifier, Test {
         require(eventCount < N_EVENTS, "Rollup is full");
         eventCount++;
 
-        string[] memory inputs = new string[](4);
-        inputs[0] = "npx";
-        inputs[1] = "ts-node";
-        inputs[2] = "test/utils/hashEvent.ts";
-        inputs[3] = vm.toString(eventHash);
-
-        eventHash = bytes32(vm.ffi(inputs));
+        // string[] memory inputs = new string[](4);
+        // inputs[0] = "npx";
+        // inputs[1] = "ts-node";
+        // inputs[2] = "test/utils/hashEvent.ts";
+        // inputs[3] = vm.toString(eventHash);
+        // eventHash = bytes32(vm.ffi(inputs));
 
         emit Move(msg.sender, block.timestamp, unit, newGoalX, newGoalY);
     }
