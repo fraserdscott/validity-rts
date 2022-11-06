@@ -39,7 +39,7 @@ describe('Using the solidity verifier', function () {
         const eventHashStr = `0x` + eventHash.toString('hex');
 
         let abi = {
-            return: ["0x0000000000000000000000000000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000000000000000000000000000"]
+            return: [eventHashStr, "0x0000000000000000000000000000000000000000000000000000000000000000"]
         }
 
         let [prover, verifier] = await setup_generic_prover_and_verifier(acir);

@@ -165,5 +165,5 @@ fn main() -> pub [Field; 2] {
     let newGoalsY : [Field; nEvents] = [0; 3];
 
     // Return empty eventHash for now
-    [0, setup_and_sim(eventFactions, eventTicks, selected, newGoalsX, newGoalsY)[1]]
+    setup_and_sim(eventFactions, eventTicks, selected, newGoalsX, newGoalsY)
 }
