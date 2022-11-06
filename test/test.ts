@@ -1,15 +1,14 @@
-import { compile, acir_from_bytes } from '@noir-lang/noir_wasm';
-import { setup_generic_prover_and_verifier, create_proof, verify_proof, create_proof_with_witness } from '@noir-lang/barretenberg/dest/client_proofs';
-import { packed_witness_to_witness, serialise_public_inputs, compute_witnesses } from '@noir-lang/aztec_backend';
+import { acir_from_bytes } from '@noir-lang/noir_wasm';
+import { setup_generic_prover_and_verifier, create_proof, verify_proof } from '@noir-lang/barretenberg/dest/client_proofs';
 import path from 'path';
 import { readFileSync } from 'fs';
 import { expect } from 'chai';
 import { ethers } from "hardhat";
-import { Contract, ContractFactory, utils } from 'ethers';
+import { Contract, ContractFactory } from 'ethers';
 
 const BUILD = "build1";
 
-describe('Using the solidity verifier', function() {
+describe('Using the solidity verifier', function () {
     let Verifier: ContractFactory;
     let verifierContract: Contract;
 
@@ -23,13 +22,11 @@ describe('Using the solidity verifier', function() {
         let acir = acir_from_bytes(acirByteArray);
 
         let abi = {
-            x: 1,
-            y: 2,
-            return: 3,
+            return: "0x0000000000000000000000000000000000000000000000000000000000000000"
         }
 
         let [prover, verifier] = await setup_generic_prover_and_verifier(acir);
- 
+
         const proof = await create_proof(prover, acir, abi);
 
         const verified = await verify_proof(verifier, proof);
