@@ -158,6 +158,7 @@ fn setup_and_sim(
     simulate_rts(factions, initialXs, initialYs, initialHealths, ranges, speeds, eventFactions, ticks, selected, newGoalsX, newGoalsY)
 }
 
+// TODO: add [Field; nFactions] which says the address for each faction. This will be given by contract.
 fn main(eventFaction : [Field; nEvents]) -> pub [Field; 2] {
     // Default values to mimic player input
     let eventTick : [Field; nEvents] = [0; 3];
