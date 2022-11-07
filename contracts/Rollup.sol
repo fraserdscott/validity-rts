@@ -13,6 +13,7 @@ contract Rollup is TurboVerifier {
 
     struct Lobby {
         uint256 startTimestamp;
+        uint256 duration;
         address winner;
         bool withdrawn;
         address[N_PLAYERS] players;
@@ -20,28 +21,30 @@ contract Rollup is TurboVerifier {
 
     Lobby[] public lobbies;
 
-    event LobbyCreated(uint256 lobbyId, uint256 startTimestamp);
+    event LobbyCreated(uint256 indexed lobbyId, uint256 startTimestamp, uint256 duration);
     event Move(
-        uint256 lobbyId,
-        address account,
+        uint256 indexed lobbyId,
+        address indexed account,
         uint256 timestamp,
         uint256 unit,
         uint256 newGoalX,
         uint256 newGoalY
     );
     event Spawn(
-        uint256 lobbyId,
+        uint256 indexed lobbyId,
         address account,
         uint256 timestamp,
+        uint256 faction,
         UnitType unitType
     );
 
-    function createLobby(uint256 startTimestamp, address[N_PLAYERS] calldata players) public {
+    function createLobby(uint256 startTimestamp, uint256 duration, address[N_PLAYERS] calldata players) public {
         Lobby memory lobby;
         lobby.startTimestamp = startTimestamp;
+        lobby.duration = duration;
         lobby.players = players;
 
-        emit LobbyCreated(lobbies.length, startTimestamp);
+        emit LobbyCreated(lobbies.length, startTimestamp, duration);
 
         lobbies.push(lobby);
     }
@@ -63,12 +66,12 @@ contract Rollup is TurboVerifier {
         emit Move(lobby, msg.sender, block.timestamp, unit, newGoalX, newGoalY);
     }
 
-    function spawn(uint256 lobby, UnitType unitType) public {
-        emit Spawn(lobby, msg.sender, block.timestamp, unitType);
+    function spawn(uint256 lobbyId, uint256 faction, UnitType unitType) public {
+        emit Spawn(lobbyId, msg.sender, block.timestamp, faction, unitType);
     }
 
-    function settle(uint256 index, bytes memory proof) public {
-        Lobby storage lobby = lobbies[index];
+    function settle(uint256 lobbyId, bytes memory proof) public {
+        Lobby storage lobby = lobbies[lobbyId];
 
         require(this.verify(proof), "Invalid proof");
 

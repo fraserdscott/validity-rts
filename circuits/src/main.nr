@@ -1,7 +1,7 @@
 use dep::std;
 
 global nEvents = 3;
-global nFactions = 2;
+global nPlayers = 2;
 global nUnits = 10;
 global nTicks = 10;
 global SIZE = 5;
@@ -115,10 +115,10 @@ fn simulate_rts(
     };
 
     // Whichever faction has most overall unit health wins
-    let mut points : [Field; nFactions] = [0 ; 2];
+    let mut points : [Field; nPlayers] = [0 ; 2];
     for i in 0..nUnits {
         let mut faction = 0;
-        for j in 0..nFactions {
+        for j in 0..nPlayers {
             if j == factions[i] {
                 faction = j;
             }
@@ -158,7 +158,7 @@ fn setup_and_sim(
     simulate_rts(factions, initialXs, initialYs, initialHealths, ranges, speeds, eventFactions, ticks, selected, newGoalsX, newGoalsY)
 }
 
-// TODO: add [Field; nFactions] which says the address for each faction. This will be given by contract.
+// TODO: add [Field; nPlayers] which says the address for each faction. This will be given by contract.
 fn main(eventFaction : [Field; nEvents]) -> pub [Field; 2] {
     // Default values to mimic player input
     let eventTick : [Field; nEvents] = [0; 3];
