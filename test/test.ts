@@ -10,7 +10,7 @@ import { SinglePedersen } from '@noir-lang/barretenberg/dest/crypto/pedersen';
 
 const BUILD = "build1";
 const ZERO = Buffer.from("0000000000000000000000000000000000000000000000000000000000000000", "hex");
-const N_EVENTS = 3;
+const N_EVENTS = 10;
 
 let barretenberg: BarretenbergWasm;
 let pedersen: SinglePedersen;
@@ -32,13 +32,16 @@ describe('Using the solidity verifier', function () {
         let acirByteArray = path_to_uint8array(path.resolve(__dirname, `../circuits/build/${BUILD}.acir`));
         let acir = acir_from_bytes(acirByteArray);
 
-        let eventHash = ZERO;
+        // because of basic hash fn, eventHash is 0
+        const eventHash = ZERO;
+        let eventFactions:Array<string> = [];
         for (let i=0; i < N_EVENTS; i++) {
-            eventHash = pedersen.compressInputs([eventHash, ZERO, ZERO, ZERO, ZERO, ZERO]);
+            eventFactions.push("0x0000000000000000000000000000000000000000000000000000000000000000");
         };
         const eventHashStr = `0x` + eventHash.toString('hex');
 
         let abi = {
+            eventFactions,
             return: [eventHashStr, "0x0000000000000000000000000000000000000000000000000000000000000000"]
         }
 
@@ -47,10 +50,10 @@ describe('Using the solidity verifier', function () {
         const proof = await create_proof(prover, acir, abi);
 
         const verified = await verify_proof(verifier, proof);
-        expect(verified).eq(true)
+        expect(verified).eq(true);
 
         const sc_verified = await verifierContract.verify(proof);
-        expect(sc_verified).eq(true)
+        expect(sc_verified).eq(true);
     });
 
 });

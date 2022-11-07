@@ -10,6 +10,9 @@ const config: HardhatUserConfig = {
       optimizer: { enabled: true, runs: 5000 },
     },
   },
+  mocha: {
+    timeout: 100000000
+  },
   networks: {
     hardhat: {
       blockGasLimit: 10000000,

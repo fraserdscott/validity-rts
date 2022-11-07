@@ -2,6 +2,7 @@ pragma solidity ^0.8.15;
 
 import "./Verifier.sol";
 
+uint256 constant N_EVENTS = 10;
 uint256 constant N_PLAYERS = 2;
 uint256 constant PRIZE = 1 ether;
 
@@ -14,14 +15,24 @@ contract Rollup is TurboVerifier {
     struct Lobby {
         uint256 startTimestamp;
         uint256 duration;
-        address winner;
+        uint256 winner;
         bool withdrawn;
+        bytes32 eventHash;
+        uint256 eventCount;
         address[N_PLAYERS] players;
     }
 
     Lobby[] public lobbies;
 
-    event LobbyCreated(uint256 indexed lobbyId, uint256 startTimestamp, uint256 duration);
+    event LobbyCreated(
+        uint256 indexed lobbyId,
+        uint256 startTimestamp,
+        uint256 duration
+    );
+    event LobbySettled(
+        uint256 indexed lobbyId,
+        uint256 winner
+    );
     event Move(
         uint256 indexed lobbyId,
         address indexed account,
@@ -30,15 +41,12 @@ contract Rollup is TurboVerifier {
         uint256 newGoalX,
         uint256 newGoalY
     );
-    event Spawn(
-        uint256 indexed lobbyId,
-        address account,
-        uint256 timestamp,
-        uint256 faction,
-        UnitType unitType
-    );
 
-    function createLobby(uint256 startTimestamp, uint256 duration, address[N_PLAYERS] calldata players) public {
+    function createLobby(
+        uint256 startTimestamp,
+        uint256 duration,
+        address[N_PLAYERS] calldata players
+    ) public {
         Lobby memory lobby;
         lobby.startTimestamp = startTimestamp;
         lobby.duration = duration;
@@ -49,43 +57,33 @@ contract Rollup is TurboVerifier {
         lobbies.push(lobby);
     }
 
-    /* 
-    Player actions are logged with: 
-    - sender's address
-    - block timestamp
-    - a unit to move
-    - the new goal position for that unit
-    Note that the address and timestamp are enforced by the contract.
-    */
     function move(
-        uint256 lobby,
+        uint256 lobbyId,
         uint256 unit,
         uint256 newGoalX,
         uint256 newGoalY
     ) public {
-        emit Move(lobby, msg.sender, block.timestamp, unit, newGoalX, newGoalY);
-    }
+        Lobby storage lobby = lobbies[lobbyId];
 
-    function spawn(uint256 lobbyId, uint256 faction, UnitType unitType) public {
-        emit Spawn(lobbyId, msg.sender, block.timestamp, faction, unitType);
+        require(lobby.eventCount < N_EVENTS, "Max number of events reached");
+        lobby.eventCount++;
+        lobby.eventHash = bytes32(uint256(lobby.eventHash) + uint256(uint160(msg.sender)) + block.timestamp + unit + newGoalX + newGoalY);
+
+        emit Move(lobbyId, msg.sender, block.timestamp, unit, newGoalX, newGoalY);
     }
 
     function settle(uint256 lobbyId, bytes memory proof) public {
         Lobby storage lobby = lobbies[lobbyId];
-
+        
+        bytes32 eventHash = abi.decode(proof, (bytes32[1]))[0];
+        require(block.timestamp > lobby.startTimestamp + lobby.duration, "Lobby is not ready to settle");
+        require(eventHash == lobby.eventHash, "Incorrect eventHash");
         require(this.verify(proof), "Invalid proof");
 
-        lobby.winner = address(uint160(abi.decode(proof, (uint256[2]))[1]));
-    }
+        uint256 winner = abi.decode(proof, (uint256[2]))[1];
+        lobby.winner = winner;
 
-    function withdraw(uint256 index) public {
-        Lobby storage lobby = lobbies[index];
-
-        require(!lobby.withdrawn, "Winner has aleady withdrawn reward");
-        lobby.withdrawn = true;
-
-        (bool success, ) = lobby.winner.call{value: PRIZE}("");
-        require(success, "ETH Transfer failed");
+        emit LobbySettled(lobbyId, winner);
     }
 
     function getPlayers(uint256 index)

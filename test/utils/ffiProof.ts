@@ -6,7 +6,7 @@ import { BarretenbergWasm } from '@noir-lang/barretenberg/dest/wasm';
 import { SinglePedersen } from '@noir-lang/barretenberg/dest/crypto/pedersen';
 
 const ZERO = Buffer.from("0000000000000000000000000000000000000000000000000000000000000000", "hex");
-const N_EVENTS = 3;
+const N_EVENTS = 10;
 
 let barretenberg: BarretenbergWasm;
 let pedersen: SinglePedersen;
@@ -21,9 +21,11 @@ async function generateProof() {
     await barretenberg.init()
     pedersen = new SinglePedersen(barretenberg);
 
-    let eventHash = ZERO;
-    for (let i = 0; i < N_EVENTS; i++) {
-        eventHash = pedersen.compressInputs([eventHash, ZERO, ZERO, ZERO, ZERO, ZERO]);
+    // TODO: event hash needs to be calculated by summing move inputs
+    const eventHash = Buffer.from("0x0000000000000000000000070fcc28b397781ccd504f8faa879f14f3e958f132", "hex");
+    let eventFactions:Array<string> = [];
+    for (let i=0; i < N_EVENTS; i++) {
+        eventFactions.push("0x0000000000000000000000000000000000000000000000000000000000000000");
     };
     const eventHashStr = `0x` + eventHash.toString('hex');
 
@@ -31,8 +33,8 @@ async function generateProof() {
     let acir = acir_from_bytes(acirByteArray);
 
     let abi = {
-        eventFactions: ["0x0000000000000000000000000000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000000000000000000000000000"],
-        return: [eventHashStr, parseInt(process.argv[3])]
+        eventFactions,
+        return: [eventHashStr, "0x0000000000000000000000000000000000000000000000000000000000000000"]
     }
 
     let [prover] = await setup_generic_prover_and_verifier(acir);
