@@ -6,29 +6,43 @@ uint256 constant N_PLAYERS = 2;
 uint256 constant PRIZE = 1 ether;
 
 contract Rollup is TurboVerifier {
+    enum UnitType {
+        NINJA,
+        WIZARD
+    }
+
     struct Lobby {
+        uint256 startTimestamp;
         address winner;
         bool withdrawn;
         address[N_PLAYERS] players;
     }
-    
+
     Lobby[] public lobbies;
 
+    event LobbyCreated(uint256 lobbyId, uint256 startTimestamp);
     event Move(
-        uint256 lobby,
+        uint256 lobbyId,
         address account,
         uint256 timestamp,
         uint256 unit,
         uint256 newGoalX,
         uint256 newGoalY
     );
+    event Spawn(
+        uint256 lobbyId,
+        address account,
+        uint256 timestamp,
+        UnitType unitType
+    );
 
-    function createLobby(
-        address[N_PLAYERS] calldata players
-    ) public {
+    function createLobby(uint256 startTimestamp, address[N_PLAYERS] calldata players) public {
         Lobby memory lobby;
+        lobby.startTimestamp = startTimestamp;
         lobby.players = players;
-        
+
+        emit LobbyCreated(lobbies.length, startTimestamp);
+
         lobbies.push(lobby);
     }
 
@@ -49,11 +63,15 @@ contract Rollup is TurboVerifier {
         emit Move(lobby, msg.sender, block.timestamp, unit, newGoalX, newGoalY);
     }
 
+    function spawn(uint256 lobby, UnitType unitType) public {
+        emit Spawn(lobby, msg.sender, block.timestamp, unitType);
+    }
+
     function settle(uint256 index, bytes memory proof) public {
         Lobby storage lobby = lobbies[index];
 
         require(this.verify(proof), "Invalid proof");
-      
+
         lobby.winner = address(uint160(abi.decode(proof, (uint256[2]))[1]));
     }
 
@@ -65,5 +83,13 @@ contract Rollup is TurboVerifier {
 
         (bool success, ) = lobby.winner.call{value: PRIZE}("");
         require(success, "ETH Transfer failed");
+    }
+
+    function getPlayers(uint256 index)
+        public
+        view
+        returns (address[N_PLAYERS] memory)
+    {
+        return lobbies[index].players;
     }
 }
