@@ -1,29 +1,21 @@
-import { acir_from_bytes } from '@noir-lang/noir_wasm';
+import { acir_from_bytes, compile } from '@noir-lang/noir_wasm';
 import { setup_generic_prover_and_verifier, create_proof, verify_proof } from '@noir-lang/barretenberg/dest/client_proofs';
 import path from 'path';
 import { readFileSync } from 'fs';
 import { expect } from 'chai';
 import { ethers } from "hardhat";
 import { Contract, ContractFactory } from 'ethers';
-import { BarretenbergWasm } from '@noir-lang/barretenberg/dest/wasm';
-import { SinglePedersen } from '@noir-lang/barretenberg/dest/crypto/pedersen';
 
 const BUILD = "build1";
 const ZERO = Buffer.from("0000000000000000000000000000000000000000000000000000000000000000", "hex");
 const N_EVENTS = 10;
 
-let barretenberg: BarretenbergWasm;
-let pedersen: SinglePedersen;
 
 describe('Using the solidity verifier', function () {
     let Verifier: ContractFactory;
     let verifierContract: Contract;
 
     before(async () => {
-        barretenberg = await BarretenbergWasm.new();
-        await barretenberg.init()
-        pedersen = new SinglePedersen(barretenberg);
-
         Verifier = await ethers.getContractFactory("TurboVerifier");
         verifierContract = await Verifier.deploy();
     });
@@ -34,8 +26,8 @@ describe('Using the solidity verifier', function () {
 
         // because of basic hash fn, eventHash is 0
         const eventHash = ZERO;
-        let eventFactions:Array<string> = [];
-        for (let i=0; i < N_EVENTS; i++) {
+        let eventFactions: Array<string> = [];
+        for (let i = 0; i < N_EVENTS; i++) {
             eventFactions.push("0x0000000000000000000000000000000000000000000000000000000000000000");
         };
         const eventHashStr = `0x` + eventHash.toString('hex');

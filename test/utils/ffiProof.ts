@@ -2,14 +2,9 @@ import { acir_from_bytes } from '@noir-lang/noir_wasm';
 import { setup_generic_prover_and_verifier, create_proof } from '@noir-lang/barretenberg/dest/client_proofs';
 import path from 'path';
 import { readFileSync } from 'fs';
-import { BarretenbergWasm } from '@noir-lang/barretenberg/dest/wasm';
-import { SinglePedersen } from '@noir-lang/barretenberg/dest/crypto/pedersen';
 
 const ZERO = Buffer.from("0000000000000000000000000000000000000000000000000000000000000000", "hex");
 const N_EVENTS = 10;
-
-let barretenberg: BarretenbergWasm;
-let pedersen: SinglePedersen;
 
 function path_to_uint8array(path: string) {
     let buffer = readFileSync(path);
@@ -17,10 +12,6 @@ function path_to_uint8array(path: string) {
 }
 
 async function generateProof() {
-    barretenberg = await BarretenbergWasm.new();
-    await barretenberg.init()
-    pedersen = new SinglePedersen(barretenberg);
-
     // TODO: event hash needs to be calculated by summing move inputs
     const eventHash = Buffer.from("0x0000000000000000000000070fcc28b397781ccd504f8faa879f14f3e958f132", "hex");
     let eventFactions:Array<string> = [];
