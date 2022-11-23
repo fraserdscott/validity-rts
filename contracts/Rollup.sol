@@ -2,7 +2,7 @@ pragma solidity ^0.8.15;
 
 import "./Verifier.sol";
 
-uint256 constant N_EVENTS = 10;
+uint256 constant N_EVENTS = 10000;
 uint256 constant N_PLAYERS = 2;
 uint256 constant PRIZE = 1 ether;
 
